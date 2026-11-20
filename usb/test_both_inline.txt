@@ -1,0 +1,117 @@
+"$HOME/hamda_esp32_tools/bin/python" -c '
+import time
+
+def main(factory=None, ask=input, now=time.monotonic, sleep=time.sleep):
+    if factory is None:
+        import serial
+        factory = serial.Serial
+    nodes = []
+    complete = False
+
+    def send(n, command):
+        data = (command + "\n").encode("ascii")
+        if n["s"].write(data) != len(data):
+            raise RuntimeError(n["id"] + ": scrittura incompleta")
+
+    def line(n, deadline):
+        rx = n["rx"]
+        while now() < deadline:
+            data = n["s"].read(1)
+            if not data:
+                continue
+            rx.extend(data)
+            if len(rx) > 128:
+                raise RuntimeError("Risposta oltre 128 byte")
+            if rx.endswith(b"\n"):
+                raw = bytes(rx)
+                rx.clear()
+                answer = raw[:-1].removesuffix(b"\r").decode("ascii")
+                print(n["id"] + ": " + answer, flush=True)
+                return answer
+        raise RuntimeError(n["id"] + ": timeout USB")
+
+    def expect(n, answer):
+        if line(n, now() + 3) != answer:
+            raise RuntimeError(n["id"] + ": risposta inattesa")
+
+    def stop_all():
+        sent, errors = [], []
+        for n in nodes:
+            if n["verified"]:
+                try:
+                    send(n, "STOP")
+                    sent.append(n)
+                except BaseException as error:
+                    errors.append(str(error))
+        for n in sent:
+            try:
+                deadline = now() + 3
+                while True:
+                    answer = line(n, deadline)
+                    if answer == "OK STOP":
+                        n["pending"] = False
+                        break
+                    if n["pending"] and answer == "OK PULSE 15 250":
+                        n["pending"] = False
+                        continue
+                    raise RuntimeError(n["id"] + ": STOP non confermato")
+            except BaseException as error:
+                errors.append(str(error))
+        if errors:
+            raise RuntimeError("STOP non confermato: " + "; ".join(errors))
+
+    try:
+        if ask("Batterie motori A e B OFF. Collega le due USB, poi premi Invio: ") != "":
+            raise RuntimeError("Preparazione annullata")
+        for unit, mac in (("A", "10:00:3b:cc:97:d8"), ("B", "10:00:3b:cc:1c:78")):
+            s = factory(port=None, baudrate=115200, timeout=0.05,
+                        write_timeout=1, exclusive=True)
+            n = dict(id=unit, s=s, rx=bytearray(), verified=False, pending=False)
+            nodes.append(n)
+            s.dtr = s.rts = False
+            s.port = "/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_" + mac.upper() + "-if00"
+            s.open()
+            sleep(1)
+            s.reset_input_buffer()
+            send(n, "ID")
+            expect(n, "ID HAMDA_USB 1 " + unit + " " + mac)
+            n["verified"] = True
+            send(n, "STOP")
+            expect(n, "OK STOP")
+        if ask("A e B riconosciuti, STOP confermati. Collega le DUE batterie motori. Tutti gli otto DEVONO restare fermi; se uno parte scollega entrambe e Ctrl-C. Per UN impulso di 250ms su tutti scrivi PROVA: ") != "PROVA":
+            raise RuntimeError("Conferma PROVA assente")
+        stop_all()
+        sleep(0.30)
+        for n in nodes:
+            n["pending"] = True
+            send(n, "PULSE 15 250")
+        for n in nodes:
+            expect(n, "OK PULSE 15 250")
+            n["pending"] = False
+        stop_all()
+        ask("STOP finali confermati. Scollega ENTRAMBE le batterie, poi premi Invio per chiudere USB: ")
+        complete = True
+    except BaseException:
+        print("PROVA INTERROTTA: scollega entrambe le batterie.", flush=True)
+        raise
+    finally:
+        try:
+            if not complete:
+                try:
+                    stop_all()
+                except BaseException as error:
+                    print(str(error), flush=True)
+        finally:
+            for n in nodes:
+                try:
+                    n["s"].close()
+                except BaseException as error:
+                    complete = False
+                    print("Chiusura USB: " + str(error), flush=True)
+    if not complete:
+        raise RuntimeError("Chiusura incompleta")
+    print("PROVA A+B COMPLETATA: due impulsi richiesti e STOP confermati. Non e una misura di sincronismo; riferisci quanti motori hanno vibrato.", flush=True)
+
+if __name__ == "__main__":
+    main()
+'

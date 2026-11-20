@@ -7,12 +7,14 @@ banco a due moduli. Il progetto HAMDA completo comprende sviluppi ulteriori.
 
 **Stato al 20 novembre 2026:** nuovo firmware scritto e identificato su A e B.
 Su B sono riferite prove fisiche riuscite del primo motore e dei quattro in
-gruppo. Nessun impulso fisico su A e nessuna prova degli otto insieme.
-Il lavoro hardware è attualmente in pausa. I dettagli sono in
+gruppo. Su A sono riferiti funzionamento dei quattro e spegnimento autonomo.
+Nella successiva prova combinata l'utente ha confermato che **vibrano tutti e
+otto**; lo spegnimento del gruppo combinato attende ancora una conferma
+esplicita. Le prove hardware sono riprese. I dettagli sono in
 [Stato del banco](docs/STATO_2026-11-20.md).
 
 Il [resoconto delle verifiche offline](docs/VERIFICA_2026-11-20.md) registra
-261 test Python e 20 test C++ superati per questa pubblicazione.
+282 test Python e 20 test C++ superati per gli aggiornamenti pubblicati.
 
 ## Materiale precedente e inventario
 
@@ -109,9 +111,9 @@ Sul banco sono stati eseguiti gli helper inline descritti nello stato. Il
 client riutilizzabile qui elencato è verificato offline e non è ancora stato
 copiato o eseguito sul Raspberry.
 
-Questa tabella documenta la sintassi per una successiva sessione preparata;
-**non è una sequenza da eseguire durante la pausa hardware**. Nel venv nuovo
-sostituisci l'interprete del Pi con `.venv-host/bin/python`.
+Questa tabella documenta la sintassi e distingue le prove riferite dagli
+aspetti ancora da verificare; non è una sequenza automatica di test.
+Nel venv nuovo sostituisci l'interprete del Pi con `.venv-host/bin/python`.
 
 | Operazione | Comando sul Pi | Evidenza fisica attuale |
 | --- | --- | --- |
@@ -120,8 +122,14 @@ sostituisci l'interprete del Pi con `.venv-host/bin/python`.
 | Motore B separato | Stessa sintassi con `secondo`, `terzo` o `quarto`. | Prove individuali B2–B4 da eseguire. |
 | Quattro motori B | Stessa sintassi con `--unit B tutti --ms 250`. | Prova di gruppo riferita riuscita. |
 | Identità e STOP A | Stessa sintassi con `--unit A off`. | Confermati sul banco. |
-| Impulso A | Stessa sintassi con `--unit A primo --ms 250`. | Non eseguito. |
-| Otto motori richiesti | Stessa sintassi con `--unit entrambe tutti --ms 250`. | Non eseguito; nessun sincronismo fisico dimostrato. |
+| Motore A separato | Stessa sintassi con `--unit A primo --ms 250`. | Prova individuale non eseguita. |
+| Quattro motori A | Stessa sintassi con `--unit A tutti --ms 250`. | Gruppo e spegnimento autonomo riferiti riusciti. |
+| Otto motori richiesti | Stessa sintassi con `--unit entrambe tutti --ms 250`. | Vibrazione di tutti e otto riferita tramite helper; conferma dello spegnimento combinato ancora attesa. |
+
+Per le nuove prove di gruppo non sono stati incollati ulteriori log ACK.
+L'osservazione degli otto non dimostra sincronismo temporale o indipendenza
+individuale di tutti i canali. Il client completo resta distinto dagli helper
+effettivamente usati sul Pi.
 
 Ogni sessione verifica prima ID e STOP, invia al massimo un episodio e tenta
 STOP alla chiusura. Il firmware limita l'episodio a 250 ms e impone una pausa

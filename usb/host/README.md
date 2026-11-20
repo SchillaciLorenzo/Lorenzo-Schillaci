@@ -3,7 +3,8 @@
 Aggiornato al 20 novembre 2026. `hamda_usb_bench.py` è verificato con seriali e
 orologio finti; **questo entrypoint completo non è stato eseguito sul Pi**.
 Le prove reali hanno usato helper Python inline separati, con prompt manuali
-per batteria e conferma PROVA. Il protocollo HAMDA_USB è stato riconosciuto su
+per la batteria e conferme diverse secondo il blocco usato. Il protocollo
+HAMDA_USB è stato riconosciuto su
 A e B; questo risultato non equivale al collaudo di ogni comando di questa CLI.
 
 Lo [stato canonico del banco](../../docs/STATO_2026-11-20.md) registra i risultati
@@ -21,9 +22,20 @@ masse e 0 V sui driver con sola USB. B ha superato la prima prova del motore 1
 e la prova del gruppo dei quattro dopo riparazione di un cavo. Giallo su S3 e
 blu su S4 sono stati ripristinati; B2/B3/B4 non sono stati provati singolarmente.
 
-**A non ha ancora una prova fisica dei motori.** La misura USB-only V/G dei
-suoi driver non è stata eseguita. Non esiste una prova
-degli otto motori insieme. La sessione hardware è in pausa.
+Su **A** sono riferiti funzionamento dei quattro in gruppo e spegnimento
+autonomo. Nella successiva prova combinata l'utente ha riferito vibrazione di
+**tutti e otto**, ma la conferma esplicita dello spegnimento combinato è ancora
+attesa. Non sono stati incollati nuovi log ACK di queste prove. Le prove
+individuali A e B2/B3/B4 restano da eseguire.
+
+Il primo tentativo dell'helper combinato è stato annullato prima di aprire
+porte o inviare PULSE: era stato scritto `PROVA` al prompt che richiedeva
+soltanto Invio. La prova riferita riuscita per la vibrazione degli otto è
+quella successiva, con l'helper a conferme solo Invio. Il client completo
+documentato qui non è stato eseguito sul Pi.
+
+La misura USB-only V/G dei driver di A non è stata eseguita. Le prove hardware
+sono riprese; queste osservazioni non certificano isolamento o sincronismo.
 
 GPIO2 è un pin di strapping: lo stato del firmware non controlla i livelli
 prima dell'applicazione. Le batterie motori restano spente durante
@@ -70,10 +82,11 @@ gli otto motori senza attendere la conclusione della prima unità. I due invii U
 distinti: non si promette sincronismo fisico o una differenza temporale
 misurata. Un errore sul primo invio impedisce il secondo; un errore sul
 secondo invio o su qualunque ACK avvia lo STOP best effort di entrambe.
-Questa modalità a due unità è verificata soltanto con seriali finte:
-**gli otto motori insieme non sono stati provati**. A ha già ricevuto il nuovo
-firmware ed è stata riconosciuta; le verifiche fisiche ancora aperte su A
-restano distinte dai risultati di B.
+Questa modalità del **client completo** è verificata soltanto con seriali
+finte. La vibrazione degli otto riferita sul banco ha usato un helper inline
+separato e non dimostra il collaudo di questo entrypoint. L'osservazione non
+misura sincronismo, indipendenza individuale o durata; lo spegnimento del
+gruppo combinato attende ancora conferma.
 
 ## Identità e protocollo
 

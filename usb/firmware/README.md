@@ -21,8 +21,13 @@ verificato soltanto offline.
 - Su B: impulso del motore 1 con arresto autonomo riferito dall'utente;
   gruppo dei quattro funzionante dopo riparazione del cablaggio, con giallo
   su S3 e blu su S4 ripristinati. B2/B3/B4 non sono stati provati singolarmente.
-- **Nessuna prova fisica di A e nessuna prova degli otto motori insieme.**
-  La misura USB-only V/G dei driver di A non è stata eseguita. Le misure e osservazioni di B non vengono attribuite ad A.
+- Su A: gruppo dei quattro e spegnimento autonomo riferiti riusciti. Nessun
+  nuovo log ACK incollato per questa prova; nessuna prova individuale A.
+- Nella prova combinata tramite helper, l'utente riferisce che vibrano tutti
+  e otto. **La conferma dello spegnimento combinato è ancora attesa.** Nessun
+  nuovo log ACK, sincronismo o durata fisica misurati vengono dedotti.
+- La misura USB-only V/G dei driver di A non è stata eseguita. Le misure
+  elettriche di B non vengono attribuite ad A.
 
 ## Identità e mappa software
 
