@@ -1,0 +1,38 @@
+bash <<'HAMDA_ARDUINO_CLI'
+set -euo pipefail
+umask 077
+test "$(uname -m)" = aarch64
+hamda_build="$HOME/hamda_usb_build"
+mkdir -p "$hamda_build/tools"
+
+python3 -c '
+import json
+import sys
+from pathlib import Path
+root = Path(sys.argv[1])
+config = {
+    "directories": {name: str(root / name) for name in ("data", "downloads", "user")},
+    "board_manager": {"additional_urls": ["https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json"]},
+}
+path = root / "arduino-cli.yaml"
+if path.exists() and json.loads(path.read_text()) != config:
+    raise SystemExit("Configurazione gia presente e diversa: fermarsi e riportare il messaggio.")
+path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+' "$hamda_build"
+
+curl --fail --location --retry 3 --connect-timeout 20 --max-time 300 \
+  --output "$hamda_build/arduino-cli_1.6.0_Linux_ARM64.tar.gz.part" \
+  'https://github.com/arduino/arduino-cli/releases/download/v1.6.0/arduino-cli_1.6.0_Linux_ARM64.tar.gz'
+
+printf '%s  %s\n' \
+  '2ed4e1436bb3be1265966af8eba95dd25e28f3a9f92d0a58d371ed14dbaf550f' \
+  "$hamda_build/arduino-cli_1.6.0_Linux_ARM64.tar.gz.part" | sha256sum -c -
+
+mv "$hamda_build/arduino-cli_1.6.0_Linux_ARM64.tar.gz.part" \
+  "$hamda_build/arduino-cli_1.6.0_Linux_ARM64.tar.gz"
+tar -xzf "$hamda_build/arduino-cli_1.6.0_Linux_ARM64.tar.gz" \
+  -C "$hamda_build/tools" arduino-cli
+
+"$hamda_build/tools/arduino-cli" \
+  --config-file "$hamda_build/arduino-cli.yaml" version
+HAMDA_ARDUINO_CLI

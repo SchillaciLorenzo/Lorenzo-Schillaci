@@ -1,0 +1,18 @@
+bash <<'HAMDA_CORE_ESP32'
+set -euo pipefail
+hamda_build="$HOME/hamda_usb_build"
+hamda_cli="$hamda_build/tools/arduino-cli"
+hamda_config="$hamda_build/arduino-cli.yaml"
+
+"$hamda_cli" --config-file "$hamda_config" core update-index
+
+"$hamda_cli" --config-file "$hamda_config" core install \
+  esp32:esp32@3.3.13 --skip-post-install
+
+"$hamda_cli" --config-file "$hamda_config" core list
+
+"$hamda_cli" --config-file "$hamda_config" board details \
+  --fqbn 'esp32:esp32:esp32c3:CDCOnBoot=cdc,FlashSize=4M'
+
+printf '\nINSTALLAZIONE ESP32 COMPLETATA.\n'
+HAMDA_CORE_ESP32

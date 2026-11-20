@@ -1,0 +1,99 @@
+"$HOME/hamda_esp32_tools/bin/python" -c '
+import time
+
+def main(factory=None, ask=input, now=time.monotonic, sleep=time.sleep):
+    if factory is None:
+        import serial
+        factory = serial.Serial
+    s = factory(port=None, baudrate=115200, timeout=0.05,
+                write_timeout=1, exclusive=True)
+    verified = complete = False
+    pending = ""
+    rx = bytearray()
+
+    def send(command):
+        data = (command + "\n").encode("ascii")
+        if s.write(data) != len(data):
+            raise RuntimeError("Scrittura USB incompleta")
+
+    def line(deadline):
+        while now() < deadline:
+            data = s.read(1)
+            if not data:
+                continue
+            rx.extend(data)
+            if len(rx) > 128:
+                raise RuntimeError("Risposta oltre 128 byte")
+            if rx.endswith(b"\n"):
+                raw = bytes(rx)
+                rx.clear()
+                return raw[:-1].removesuffix(b"\r").decode("ascii")
+        raise RuntimeError("Timeout risposta USB")
+
+    def request(command, expected):
+        send(command)
+        answer = line(now() + 3)
+        print(answer, flush=True)
+        if answer != expected:
+            raise RuntimeError("Risposta USB inattesa")
+
+    def stop():
+        nonlocal pending
+        send("STOP")
+        deadline = now() + 3
+        while True:
+            answer = line(deadline)
+            print(answer, flush=True)
+            if answer == "OK STOP":
+                pending = ""
+                return
+            if pending and answer == pending:
+                pending = ""
+                continue
+            raise RuntimeError("STOP non confermato")
+
+    try:
+        s.dtr = False
+        s.rts = False
+        s.port = "/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_10:00:3B:CC:1C:78-if00"
+        s.open()
+        sleep(1)
+        s.reset_input_buffer()
+        request("ID", "ID HAMDA_USB 1 B 10:00:3b:cc:1c:78")
+        verified = True
+        stop()
+        print("B riconosciuto, STOP confermato. Motore 1 gia provato: non verra riattivato.", flush=True)
+        if ask("Collega SOLO batteria B. Tutti i motori DEVONO restare fermi. Se uno parte scollega subito batteria e Ctrl-C. Se sono fermi premi Invio: ") != "":
+            raise RuntimeError("Motori fermi non confermati")
+        for mask, label in ((2, "motore 2 verde scuro"), (4, "motore 3 giallo"), (8, "motore 4 blu")):
+            if ask("Prossimo: " + label + ", UN impulso di 250 ms. Scrivi PROVA e premi Invio: ") != "PROVA":
+                raise RuntimeError("Conferma PROVA assente")
+            stop()
+            sleep(0.30)
+            command = "PULSE " + str(mask) + " 250"
+            pending = "OK " + command
+            request(command, pending)
+            pending = ""
+            stop()
+            if ask("Ha vibrato SOLO " + label + " per un attimo, poi si e fermato da solo? Scrivi SI per continuare: ") != "SI":
+                raise RuntimeError("Esito fisico non confermato")
+        ask("STOP finale confermato. Scollega batteria B, poi premi Invio per chiudere USB: ")
+        complete = True
+    except BaseException:
+        print("PROVA INTERROTTA: scollega subito batteria B.", flush=True)
+        raise
+    finally:
+        try:
+            if verified and not complete:
+                try:
+                    stop()
+                    print("STOP cleanup confermato.", flush=True)
+                except BaseException as error:
+                    print("STOP NON CONFERMATO: " + str(error), flush=True)
+        finally:
+            s.close()
+    print("PROVE B2/B3/B4 COMPLETATE: tre impulsi singoli, esiti SI e STOP confermati.", flush=True)
+
+if __name__ == "__main__":
+    main()
+'

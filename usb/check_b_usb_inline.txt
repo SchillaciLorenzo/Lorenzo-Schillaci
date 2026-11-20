@@ -1,0 +1,43 @@
+"$HOME/hamda_esp32_tools/bin/python" -c '
+import serial
+import time
+
+port = serial.Serial(
+    port=None, baudrate=115200,
+    timeout=3, write_timeout=1, exclusive=True
+)
+port.dtr = False
+port.rts = False
+port.port = "/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_10:00:3B:CC:1C:78-if00"
+
+def request(command, expected):
+    print("Invio " + command, flush=True)
+    message = (command + "\n").encode("ascii")
+    if port.write(message) != len(message):
+        raise RuntimeError("Comando USB incompleto")
+    answer = port.read_until(b"\n", size=128)
+    print(answer.decode("ascii", errors="replace").strip() or "Nessuna risposta USB", flush=True)
+    valid = ((expected + "\n").encode("ascii"), (expected + "\r\n").encode("ascii"))
+    if answer not in valid:
+        raise RuntimeError("Risposta diversa da quella prevista")
+
+try:
+    port.open()
+    time.sleep(1)
+    port.reset_input_buffer()
+    request("ID", "ID HAMDA_USB 1 B 10:00:3b:cc:1c:78")
+    request("STOP", "OK STOP")
+    print("MODULO B RICONOSCIUTO: comunicazione USB e comando STOP confermati.")
+except Exception as error:
+    try:
+        if port.is_open:
+            port.timeout = 1
+            extra = port.read(1024)
+            if extra:
+                print(extra.decode("ascii", errors="replace"), flush=True)
+    except (OSError, serial.SerialException):
+        pass
+    raise SystemExit("Controllo USB interrotto: " + str(error))
+finally:
+    port.close()
+'

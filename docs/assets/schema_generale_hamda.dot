@@ -1,0 +1,29 @@
+digraph HAMDA {
+  graph [rankdir=TB, bgcolor="#ffffff", pad="0.20", nodesep="0.46", ranksep="0.40", fontname="DejaVu Sans", labelloc="t", label="UN SOLO MOTORE: ENERGIA E COMANDI", fontsize=20, fontcolor="#14263f"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=15, color="#c6d2df", fontcolor="#14263f", penwidth=1.4, margin="0.17,0.12"];
+  edge [fontname="DejaVu Sans", fontsize=12, arrowsize=0.8, penwidth=2.2];
+
+  bank [label="POWERBANK\nUSB2 OUT: circa 5 V", fillcolor="#fff1db", color="#d79b3a"];
+  usb [label="CAVO USB-A\nMorsetti + e −", fillcolor="#fff1db", color="#d79b3a"];
+  buck [label="CONVERTITORE HW133A\nVIN: ingresso · VOUT: uscita\nUscita regolata a circa 3 V", fillcolor="#fff1db", color="#d79b3a"];
+  supply [label="ALIMENTAZIONE ADATTA\nAl modello di Raspberry", fillcolor="#e7f1fc", color="#5793c4"];
+  pi [label="RASPBERRY PI\nEsegue il programma\nModello ancora da identificare", fillcolor="#e7f1fc", color="#5793c4"];
+  pca [label="PCA9685\nGenera i segnali PWM\nVCC logica: 3,3 V · V+ inutilizzato", fillcolor="#e7f1fc", color="#5793c4"];
+  driver [label="DRV8833\nRiceve alimentazione e comandi\nVCC motori: circa 3 V", fillcolor="#e6f3ed", color="#4b9470", fontsize=17];
+  motor [label="UN MOTORE\nCollegato alle due uscite del suo ponte\n3 V dichiarati nell’inserzione", fillcolor="#e6f3ed", color="#4b9470"];
+
+  {rank=same; bank; supply;}
+  {rank=same; usb; pi;}
+  {rank=same; buck; pca;}
+
+  bank -> usb [label="energia", color="#c97a12", fontcolor="#9b5b0a"];
+  usb -> buck [label="a VIN+ e VIN−", color="#c97a12", fontcolor="#9b5b0a"];
+  buck -> driver [label="VOUT+ → VCC\nVOUT− → GND", color="#c97a12", fontcolor="#9b5b0a"];
+  supply -> pi [label="energia del computer", color="#c97a12", fontcolor="#9b5b0a"];
+  pi -> pca [label="comandi I²C\ne logica a 3,3 V", color="#2b75bd", fontcolor="#235b93"];
+  pca -> driver [label="segnale PWM\nabilitazione da definire", color="#2b75bd", fontcolor="#235b93"];
+  driver -> motor [label="energia regolata dal driver", color="#c97a12", fontcolor="#9b5b0a"];
+
+  note [shape=plain, style="", label="Arancione: energia · Blu: comandi\nGND comune tra convertitore, driver, PCA e Raspberry.\nLa corrente del motore ritorna al convertitore, non attraverso i fili del Raspberry.\nSchema funzionale: abilitazioni, frequenza e cablaggio finale restano da verificare.", fontsize=11, fontcolor="#44576f"];
+  motor -> note [style=invis];
+}

@@ -1,0 +1,30 @@
+"$HOME/hamda_esp32_tools/bin/python" -c '
+import serial
+import time
+
+port = serial.Serial(
+    port=None, baudrate=115200,
+    timeout=0.2, exclusive=True
+)
+port.dtr = False
+port.rts = False
+port.port = "/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_10:00:3B:CC:1C:78-if00"
+
+try:
+    port.open()
+    print("PREMI ORA una volta RST sul modulo B. Lettura per 20 secondi...", flush=True)
+    deadline = time.monotonic() + 20
+    received = 0
+    while time.monotonic() < deadline and received < 4096:
+        data = port.read(min(256, 4096 - received))
+        if data:
+            received += len(data)
+            print(data.decode("ascii", errors="replace"), end="", flush=True)
+    if received == 0:
+        print("Nessun messaggio ricevuto.", flush=True)
+    print("\nFINE LETTURA.", flush=True)
+except (OSError, serial.SerialException) as error:
+    raise SystemExit("Lettura USB interrotta: " + str(error))
+finally:
+    port.close()
+'

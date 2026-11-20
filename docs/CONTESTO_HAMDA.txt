@@ -1,0 +1,173 @@
+PROMEMORIA STORICO DEL BANCO PCA9685/DRV. Stato corrente: docs/STATO_2026-11-20.md; codice USB: usb/.
+
+HAMDA - CONTESTO PER UNA NUOVA CHAT
+Aggiornamento: 9 novembre 2026
+
+SCOPO DI QUESTO FILE
+Questo promemoria porta nella nuova chat lo stato attuale del progetto.
+L'utente vuole discutere un altro argomento relativo ad HAMDA: ascoltare
+la nuova richiesta, conservando il banco funzionante come riferimento.
+La specifica completa delle funzioni finali del progetto non e' contenuta
+qui: se la nuova domanda ne dipende, serve anche il documento originale.
+
+COME COLLABORARE CON L'UTENTE
+L'utente e' principiante assoluto in elettronica e programmazione; ha
+chiesto spiegazioni come per un bambino di otto anni. Parlare italiano,
+usare nomi concreti e pochi passi per volta. Distinguere chiaramente
+Mac e Raspberry, i pin gialli/rossi/neri della PCA e i nomi stampati sulle
+DRV. Dire quando scollegare l'alimentazione prima di spostare fili.
+L'utente tende a copiare anche i messaggi di risultato nel Terminale:
+mettere nei blocchi di codice soltanto cio' che deve davvero eseguire.
+Le domande arrivate in ritardo dai vecchi riquadri possono riferirsi a
+passaggi gia' superati: seguire le precisazioni esplicite piu' recenti.
+
+PROGETTO E COMPUTER
+Progetto HAMDA, descritto dall'utente come lavoro in ambito ESA.
+Computer personale: MacBook Pro Intel. Hardware di controllo:
+Raspberry Pi 4, Raspberry Pi OS 64 bit con desktop, Python 3.13.5.
+Utente Raspberry: lorenzoschillaci. Hostname: HAMDA.
+Accesso corrente: monitor Dell via micro-HDMI e tastiera USB.
+Il Raspberry e' alimentato dalla USB-C POWER IN; HDMI non lo alimenta.
+I2C abilitato, /dev/i2c-1 presente, utente nel gruppo i2c.
+SSH tramite cavo USB e' stato usato in passato, poi messo da parte per
+problemi di connessione. Non riaprire quella diagnosi come prerequisito
+del nuovo lavoro. Sono disponibili trasferimento tramite browser e
+alternativa tramite SD e lettore del Mac.
+
+HARDWARE DICHIARATO E BANCO ATTUALE
+- Posseduti: 50 piccoli motori vibranti, nominalmente 3 V, modello 1027.
+- Possedute: quattro PCA9685; una sola usata nel banco corrente.
+- Dichiarati: dodici moduli chiamati DM0018x8; i due usati attualmente
+  sono stati identificati come DRV8833. Verificare gli altri prima di
+  attribuire loro gli stessi pin o la stessa funzione.
+- Banco corrente funzionante: una PCA9685, due DRV8833, quattro motori.
+- Alimentazione motori: powerbank, uscita USB-A circa 5 V, convertitore
+  step-down regolato a circa 3 V, breadboard come distribuzione.
+- La scritta 65 W del powerbank non e' la potenza usata o misurata.
+- Non usare i dati commerciali incoerenti 5 W/10 A del piccolo motore
+  come base di progetto. Corrente reale e capacita' continua del piccolo
+  buck non sono state misurate.
+- L'utente ha saldatore, multimetro e ha gia' saldato i pin dei moduli.
+
+CABLAGGIO DI RIFERIMENTO
+Raspberry pin fisico 1 (3,3 V) -> PCA VCC.
+Raspberry pin fisico 3 (SDA) -> PCA SDA.
+Raspberry pin fisico 5 (SCL) -> PCA SCL.
+Raspberry pin fisico 6 (GND) -> PCA GND.
+PCA indirizzo I2C 0x40, bus /dev/i2c-1. 0x70 era l'alias ALLCALL,
+non una seconda scheda.
+
+PCA pin giallo gruppo 0 -> prima DRV IN1.
+PCA pin giallo gruppo 1 -> prima DRV IN3.
+PCA pin giallo gruppo 2 -> seconda DRV IN1.
+PCA pin giallo gruppo 3 -> seconda DRV IN3.
+Su ogni DRV: IN2, IN4 e GND -> negativo comune.
+Su ogni DRV: VCC e SLEEP -> positivo motori circa 3 V.
+Prima DRV OUT1/OUT2 -> motore 1; OUT3/OUT4 -> motore 2.
+Seconda DRV OUT1/OUT2 -> motore 3; OUT3/OUT4 -> motore 4.
+FAULT resta libero; non e' stato fatto un ponte J1.
+Negativo del regolatore, GND DRV, PCA e Raspberry sono comuni.
+Positivo logica 3,3 V e positivo motori 3 V sono distinti.
+Pin rossi V+ e morsetto verde della PCA restano inutilizzati.
+I connettori bianchi dei motori non sono identificati per famiglia e
+passo: non ordinare ricambi presumendo che siano tutti compatibili.
+
+PROGRAMMA FUNZIONANTE
+File installato sul Raspberry: ~/hamda_quattro_motori.py
+Sorgente nell'archivio: tools/hamda_quattro_motori.py
+SHA256: 158cb0fed760db8d63f450f5a22d65809d2c3ca06550a8f2368dd85f04e8ffb9
+Solo libreria standard Python; non servono nuovi pacchetti per provarlo.
+
+Eseguire nel Terminale del Raspberry, una prova alla volta:
+python3 ~/hamda_quattro_motori.py off
+python3 ~/hamda_quattro_motori.py primo
+python3 ~/hamda_quattro_motori.py secondo
+python3 ~/hamda_quattro_motori.py terzo
+python3 ~/hamda_quattro_motori.py quarto
+python3 ~/hamda_quattro_motori.py insieme
+python3 ~/hamda_quattro_motori.py coppia2
+python3 ~/hamda_quattro_motori.py tutti
+
+off = uscite spente; primo/secondo/terzo/quarto = un motore;
+insieme = soltanto i primi due; coppia2 = terzo e quarto;
+tutti = quattro motori. Impulso software nominale 0,25 secondi.
+FULL_ON/FULL_OFF, senza regolazione PWM di intensita' in questa fase.
+Il vecchio hamda_banco.py resta il programma del banco a due motori.
+
+RISULTATI CONFERMATI E LIMITI
+Il banco a due motori funzionava ed e' stato riconfermato dopo un riavvio.
+Poi e' stato installato il nuovo programma: l'utente ha riferito il
+messaggio off e, dopo il comando tutti e l'istruzione di osservare
+l'arresto, ha risposto "perfetto funziona tutto". Quattro motori insieme
+con breve impulso e arresto sono quindi confermati dall'utente.
+Le prove singole terzo e quarto non sono state riferite separatamente.
+Nove test automatici del programma a quattro motori sono superati:
+selezione delle uscite, impulso limitato, spegnimento, interruzioni e
+guasti simulati I2C, clock esterno, selezioni invalide e lock condiviso.
+Il programma spegne tutte le 16 uscite e verifica OFF_H sulle quattro
+usate; la pulizia e' best effort. Blocco del sistema, SIGKILL o guasto
+persistente I2C possono impedire l'arresto. Powerbank scollegabile a mano.
+Corrente, temperatura, tensione sotto carico e durata meccanica non
+misurate. Il collaudo breve non dimostra uso continuo o piu' di quattro
+motori. Non chiamare questo programma il software finale completo HAMDA.
+
+PROVE E SPEGNIMENTO
+Powerbank motori scollegato durante off. Dopo off riuscito, collegarlo:
+i motori devono restare fermi fino al comando. Scollegarlo dopo la prova
+e immediatamente in caso di movimento inatteso o arresto fallito.
+Per spegnere: scollegare prima il powerbank motori, poi sul Raspberry:
+sudo systemctl poweroff
+Aspettare 30 secondi e scollegare la USB-C. Anche prima di spostare fili
+o estrarre la SD, togliere entrambe le alimentazioni dopo lo spegnimento.
+
+ULTIMO ARGOMENTO HARDWARE: RIORDINO DELLA BREADBOARD
+La foto IMG_9175 2.HEIC mostra due DRV molto vicine e tanti cavi lunghi.
+L'utente e' al momento a casa e preferisce acquistare materiale adatto.
+Proposta: millefori FR4 con zoccoli femmina per DRV estraibili, collegamenti
+locali al positivo e negativo, prese numerate motori, supporto isolante.
+IN2/IN4/GND e VCC/SLEEP diventano collegamenti corti saldati sul supporto.
+Per DRV, sette fili esterni di ingresso/alimentazione diventano quattro:
+due comandi e la coppia di alimentazione; restano i fili dei motori.
+Ritorno di potenza diretto al regolatore, senza far passare corrente dei
+motori attraverso la PCA. Conservare il banco finche' il nuovo supporto
+non e' pronto e verificato.
+
+Materiali suggeriti, non ancora acquistati o verificati in annunci:
+- Millefori FR4, passo 2,54 mm, piazzole isolate, 7x9 e/o 10x15 cm.
+- Zoccoli femmina 1x6 passo 2,54 mm: quattro pezzi per due DRV, piu' ricambi.
+- Strip pin maschio 1x40, passo 2,54 mm.
+- Morsetto ingresso due poli, passo 5,08 mm, pin compatibili con millefori.
+- Filo rame rigido isolato AWG22, rosso/nero e altri colori.
+Prima del montaggio controllare distanza tra le file, passo, verso e
+lunghezza dei pin gia' saldati, spazio sotto i moduli e portata dei fili.
+Non esiste ancora un disegno foro per foro, una nuova basetta costruita
+o un acquisto confermato. I link forniti erano ricerche su Amazon.de,
+non singoli prodotti con compatibilita' gia' verificata.
+
+OROLOGIO E INTERNET
+Accesso alla rete del lavoro riuscito, poi Firefox dava errore TLS per
+Google. Data del Raspberry errata; tentativo di sincronizzazione NTP
+non l'ha corretta. L'utente ha poi confermato la regolazione manuale.
+Control Centre > Localisation offriva il fuso orario, non la data manuale.
+Non e' verificato che la sincronizzazione automatica funzioni o che la
+data rimanga corretta al prossimo riavvio. Non riutilizzare timestamp
+fissi vecchi come correzione permanente. Non disabilitare la verifica
+dei certificati del browser per aggirare l'errore.
+
+FILE E CONTINUITA'
+Il pacchetto HAMDA_per_nuova_chat_2026-11-09.zip comprende questo file,
+il codice collaudato, i test, il promemoria, le istruzioni di trasferimento
+e la proposta di riordino. Leggere prima il contesto, poi i documenti
+pertinenti alla nuova domanda dell'utente.
+La baseline precedente e' HAMDA_banco_quattro_motori_2026-11-09.zip;
+le copie a due motori sono conservate. Il promemoria dei comandi si puo'
+tenere sul Mac con TextEdit; i comandi hardware si eseguono sul Raspberry.
+
+Nel workspace di questa chat i file sono in /workspace/Lorenzo-Schillaci
+e /workspace/exports. Una nuova chat puo' avere un ambiente diverso:
+allegare i file, senza presumere che quei percorsi esistano ancora.
+Il repository menzionato dall'utente e' SchillaciLorenzo/Lorenzo-Schillaci.
+La copia Git locale e' sul ramo work senza commit; gli aggiornamenti di
+questa sessione non sono stati pubblicati su GitHub. Non presumere che
+main contenga il programma corrente solo perche' i file sono salvati qui.
+Questo promemoria non contiene password o altre credenziali.

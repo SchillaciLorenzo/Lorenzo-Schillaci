@@ -1,0 +1,17 @@
+{
+  "compiled_on": "2026-11-19",
+  "compiler_environment": "Raspberry Pi 4 Linux aarch64",
+  "arduino_cli": "1.6.0",
+  "arduino_esp32": "3.3.13",
+  "fqbn": "esp32:esp32:esp32c3:CDCOnBoot=cdc,FlashSize=4M,FlashMode=dio,FlashFreq=80",
+  "firmware_sources_sha256": {
+    "hamda_usb_bench.ino": "2a2435c075f78b076edbdfa13ec30d7dfbec940623501b3e689ecf93b8511172",
+    "src/bench_core.h": "79b18f5d26efdd3e16adaa9bfed117034dff916c3339cd2880de5faff0b05979",
+    "src/bench_core.cpp": "e505ea1f14da2502b6774372b57ed697010eddd6cf1fb82599ae395f7bb63912"
+  },
+  "application_bytes": 300192,
+  "application_offset": "0x10000",
+  "application_validation_hash": "f1d3b1bc169f7a1203b5fdada68e4bfd79ee63a425fce83b5054c8b72bd65137",
+  "elf_file_sha256": "6ce79c435fcc326bca3475f487f23d66c3fe13e6b637c4e0e3a026985eb1f417",
+  "note": "I sorgenti corrispondono a quelli verificati sul Pi. Una nuova build può produrre hash diversi. Il validation hash esptool non è lo SHA-256 dell’intero file .bin."
+}

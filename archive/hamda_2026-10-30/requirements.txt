@@ -1,0 +1,2 @@
+# Nessuna dipendenza esterna per il primo deliverable simulato.
+# Esecuzione e test utilizzano soltanto la libreria standard di Python.

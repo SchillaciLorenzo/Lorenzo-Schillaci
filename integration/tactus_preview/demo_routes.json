@@ -1,0 +1,11 @@
+{
+  "local_units": {
+    "1": {"front": 0, "right": 1, "back": 2, "left": 3}
+  },
+  "remote_units": {
+    "1": {
+      "topic_prefix": "remote_demo_UNCONFIRMED",
+      "pins": {"front": 0, "right": 1, "back": 3, "left": 4}
+    }
+  }
+}

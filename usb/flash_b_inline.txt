@@ -1,0 +1,101 @@
+"$HOME/hamda_esp32_tools/bin/python" -c '
+"""B only: main(write=True)."""
+import hashlib
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+BACKUP_SHA = "00a6e07893fd667065b50bc47e4640a43c8d07ce0428c06360beb75907092473"
+ELF_SHA = "6ce79c435fcc326bca3475f487f23d66c3fe13e6b637c4e0e3a026985eb1f417"
+IMAGE_SHA = "f1d3b1bc169f7a1203b5fdada68e4bfd79ee63a425fce83b5054c8b72bd65137"
+MAC = "10:00:3b:cc:1c:78"
+PORT = "/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_10:00:3B:CC:1C:78-if00"
+
+
+def require(ok, reason):
+    if not ok:
+        raise RuntimeError(reason)
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def field(text, name):
+    values = re.findall(r"^[ \t]*" + re.escape(name) + r":[ \t]*([^\r\n]+)", text, re.M)
+    require(len(values) == 1, "Field: " + name)
+    return values[0].strip()
+
+
+def main(write=False, home=None, runner=subprocess.run):
+    require(write is True, "Need write=True")
+    home = Path.home() if home is None else Path(home)
+    build = home / "hamda_usb_build/progetti/hamda_usb_manuale_20261119/build"
+    backup = home / "HAMDA_backup_ESP32_B_MkWPAM1J"
+    for name in ("firmware_lettura1.bin", "firmware_lettura2.bin"):
+        path = backup / name
+        require(path.is_file() and path.stat().st_size == 4194304,
+                "B backup size")
+        require(digest(path) == BACKUP_SHA, "B backup SHA mismatch")
+    print("BACKUP B VERIFIED", flush=True)
+    stem = "hamda_usb_bench.ino"
+    files = [build / (stem + ".bootloader.bin"),
+             build / (stem + ".partitions.bin"),
+             home / "hamda_usb_build/data/packages/esp32/hardware/esp32/3.3.13/tools/partitions/boot_app0.bin",
+             build / (stem + ".bin")]
+    elf = build / (stem + ".elf")
+    for path, limit in zip(files + [elf], [32768, 4096, 8192, 1310720, 16777216]):
+        require(path.is_file() and 0 < path.stat().st_size <= limit,
+                "Artifact: " + str(path))
+    require(files[3].stat().st_size == 300192, "App size mismatch")
+    hashes = [digest(path) for path in files + [elf]]
+    require(hashes[-1] == ELF_SHA, "ELF SHA mismatch")
+    for path, sha in zip(files + [elf], hashes):
+        print(sha, path, flush=True)
+    base = [sys.executable, "-m", "esptool"]
+
+    def call(args):
+        result = runner(base + args, stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT, text=True, check=False)
+        print(result.stdout, end="", flush=True)
+        require(result.returncode == 0, "esptool: " + str(result.returncode))
+        return result.stdout
+
+    version = call(["version"])
+    require(re.search(r"(?m)^5\.6\.0\s*$", version), "Need esptool 5.6.0")
+    for index in (0, 3):
+        info = call(["--chip", "esp32c3", "image-info", str(files[index])])
+        for key, value in (("Flash size", "4MB"), ("Flash freq", "80m"),
+                           ("Flash mode", "DIO")):
+            require(field(info, key) == value, "Unexpected image " + key)
+        require(field(info, "Chip ID") in ("5", "5 (ESP32-C3)"), "Not C3 image")
+        require(re.fullmatch(r"0x[0-9a-fA-F]+ \(valid\)", field(info, "Checksum")),
+                "Invalid image checksum")
+        expected = IMAGE_SHA if index == 3 else r"[0-9a-f]{64}"
+        require(re.fullmatch(expected + r" \(valid\)", field(info, "Validation hash")),
+                "Invalid image validation hash")
+        if index == 3:
+            require(field(info, "ELF file SHA256") == ELF_SHA, "Image ELF SHA mismatch")
+    port = ["--chip", "esp32c3", "--port", PORT, "--baud", "115200",
+            "--after", "no-reset", "--no-stub"]
+    info = call(port + ["--before", "default-reset", "get-security-info"])
+    require(field(info, "MAC") == MAC, "Not module B")
+    require(re.fullmatch(r"0x0+(?: \(0b0\))?", field(info, "Flags")), "Flags")
+    for key in ("Secure Boot", "Flash Encryption"):
+        require(field(info, key) == "Disabled", key + " not disabled")
+    require(hashes == [digest(path) for path in files + [elf]], "Artifact changed")
+    args = port + ["--before", "no-reset", "write-flash", "-z",
+                   "--flash-mode", "keep", "--flash-freq", "keep", "--flash-size", "keep"]
+    for address, path in zip(("0x0", "0x8000", "0xe000", "0x10000"), files):
+        args += [address, str(path)]
+    print("WRITE B ONLY; NO RESET", flush=True)
+    result = call(args)
+    require(result.count("Hash of data verified.") == 4, "Write verification")
+    print("SCRITTURA B COMPLETATA; BOOTLOADER MANTENUTO", flush=True)
+
+try:
+    main(write=True)
+except Exception as error:
+    raise SystemExit("Caricamento interrotto: " + str(error))
+'

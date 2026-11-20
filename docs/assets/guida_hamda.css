@@ -1,0 +1,48 @@
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+html { background: #e9eef4; }
+body { margin: 2rem auto; max-width: 960px; padding: 3rem 4rem; background: white; color: #17283f; font-family: Arial, Helvetica, sans-serif; font-size: 17px; line-height: 1.55; }
+header#title-block-header { border-bottom: 4px solid #2375a8; margin-bottom: 2rem; padding-bottom: 1rem; }
+header .title { font-size: 2.2rem; line-height: 1.12; }
+#hamda-dalla-a-alla-z { display: none; }
+h1 { font-size: 2rem; line-height: 1.2; color: #102b49; }
+h2 { margin-top: 2.2rem; border-top: 2px solid #d9e5ef; padding-top: 1rem; color: #164b72; font-size: 1.6rem; line-height: 1.2; }
+h3 { font-size: 1.2rem; margin-top: 1.4rem; color: #164b72; }
+p, li { orphans: 3; widows: 3; }
+li { margin: .38rem 0; }
+strong { color: #102b49; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0 1.5rem; font-size: .95rem; }
+th, td { text-align: left; vertical-align: top; border: 1px solid #cbd7e3; padding: .55rem .65rem; overflow-wrap: anywhere; }
+th { color: #143f62; background: #eaf2f9; }
+tr:nth-child(even) td { background: #f7f9fc; }
+blockquote { border-left: 4px solid #d99b30; margin: 1.2rem 0; padding: .2rem 1rem; background: #fff8e9; color: #493b22; }
+code { font-family: 'DejaVu Sans Mono', monospace; font-size: .88em; background: #eef3f8; border-radius: 3px; padding: .08rem .2rem; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #eff4f9; padding: .85rem; border: 1px solid #d3dfea; border-radius: 4px; }
+pre code { padding: 0; background: transparent; }
+a { color: #155e9c; }
+img { display: block; max-width: 100%; height: auto; margin: 1rem auto; }
+figure { margin: 1.2rem 0; break-inside: avoid; }
+figcaption { font-size: .85rem; text-align: center; color: #53667a; }
+nav#TOC { padding: 1rem 1.4rem; background: #f3f7fb; border: 1px solid #d5e0eb; }
+nav#TOC ul { list-style: none; padding-left: 1rem; }
+hr { border: 0; border-top: 1px solid #d2dde7; margin: 2rem 0; }
+@page { size: A4; margin: 16mm 15mm 17mm; }
+@media print {
+  html { background: white; }
+  body { margin: 0; padding: 0; width: auto; max-width: none; font-size: 10.8pt; line-height: 1.4; }
+  header .title { font-size: 27pt; }
+  h1 { font-size: 24pt; }
+  h2 { font-size: 17pt; break-before: page; margin-top: 0; border-top: 3px solid #2375a8; padding-top: 6mm; }
+  h3 { font-size: 12pt; break-after: avoid; }
+  h1, h2, h3 { break-after: avoid; }
+  th, td { padding: 2.1mm 2.3mm; }
+  table { font-size: 9.3pt; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  blockquote, pre { break-inside: avoid; }
+  code { font-size: 8.9pt; }
+  pre { padding: 3mm; }
+  img { max-height: 210mm; }
+  nav#TOC { break-after: page; font-size: 10pt; }
+  a { text-decoration: none; color: #155e9c; }
+}

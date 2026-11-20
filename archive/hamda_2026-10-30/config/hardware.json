@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "mode": "simulation",
+  "max_duration_ms": 60000,
+  "motors": [
+    {"motor_id": "L1", "channel": 0, "max_intensity": 100, "position": null},
+    {"motor_id": "L2", "channel": 1, "max_intensity": 100, "position": null},
+    {"motor_id": "L3", "channel": 2, "max_intensity": 100, "position": null},
+    {"motor_id": "L4", "channel": 3, "max_intensity": 100, "position": null},
+    {"motor_id": "L5", "channel": 4, "max_intensity": 100, "position": null},
+    {"motor_id": "L6", "channel": 5, "max_intensity": 100, "position": null},
+    {"motor_id": "L7", "channel": 6, "max_intensity": 100, "position": null},
+    {"motor_id": "L8", "channel": 7, "max_intensity": 100, "position": null},
+    {"motor_id": "R1", "channel": 8, "max_intensity": 100, "position": null},
+    {"motor_id": "R2", "channel": 9, "max_intensity": 100, "position": null},
+    {"motor_id": "R3", "channel": 10, "max_intensity": 100, "position": null},
+    {"motor_id": "R4", "channel": 11, "max_intensity": 100, "position": null},
+    {"motor_id": "R5", "channel": 12, "max_intensity": 100, "position": null},
+    {"motor_id": "R6", "channel": 13, "max_intensity": 100, "position": null},
+    {"motor_id": "R7", "channel": 14, "max_intensity": 100, "position": null},
+    {"motor_id": "R8", "channel": 15, "max_intensity": 100, "position": null}
+  ]
+}

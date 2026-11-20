@@ -1,0 +1,127 @@
+PROMEMORIA STORICO DEL BANCO PCA9685/DRV. Stato corrente: docs/STATO_2026-11-20.md; codice USB: usb/.
+
+HAMDA - COMANDI IMPORTANTI DEL RASPBERRY
+Promemoria del 9 novembre 2026 - banco con quattro motori
+
+Versione funzionante confermata: quattro motori contemporaneamente,
+impulso software impostato a 0,25 secondi, su due schede DRV8833.
+
+Questo foglio si legge nell'editor di testo.
+Puoi conservarlo sul Mac e consultarlo mentre lavori sul Raspberry.
+Nel Terminale esegui UN SOLO comando alla volta, quando serve.
+Non incollare l'intero foglio nel Terminale.
+
+COMPUTER GIUSTO
+Usa il Terminale del Raspberry sul monitor Dell.
+La riga di comando contiene lorenzoschillaci@HAMDA.
+Non digitare il simbolo $ o le frasi dei risultati.
+La password si digita solo quando viene richiesta: resta invisibile.
+Non salvare password in questo foglio.
+
+APRIRE IL TERMINALE
+Premi insieme Ctrl + Alt + T sulla tastiera del Raspberry.
+
+CONTROLLARE IL NOME DEL COMPUTER
+hostname
+Risultato da leggere: HAMDA.
+
+TORNARE ALLA CARTELLA PERSONALE
+cd
+Fallo prima dei comandi del programma.
+
+VEDERE LA CARTELLA ATTUALE
+pwd
+
+VEDERE I FILE DELLA CARTELLA
+ls
+Nella cartella personale deve esserci hamda_quattro_motori.py.
+
+PREPARARE LE USCITE SPENTE
+Powerbank dei motori scollegato, Raspberry acceso e PCA collegata.
+python3 ~/hamda_quattro_motori.py off
+Risultato da leggere: PCA: uscite impostate spente.
+Se compare un errore, lascia il powerbank scollegato e annota l'errore.
+
+PROVARE I MOTORI
+Dopo il comando off riuscito, collega il powerbank al regolatore a 3 V.
+Prima del comando, i motori devono restare fermi.
+Esegui una sola delle prove seguenti alla volta.
+
+Solo il primo, collegato alla prima DRV OUT1 e OUT2:
+python3 ~/hamda_quattro_motori.py primo
+
+Solo il secondo, collegato alla prima DRV OUT3 e OUT4:
+python3 ~/hamda_quattro_motori.py secondo
+
+Solo il terzo, collegato alla seconda DRV OUT1 e OUT2:
+python3 ~/hamda_quattro_motori.py terzo
+
+Solo il quarto, collegato alla seconda DRV OUT3 e OUT4:
+python3 ~/hamda_quattro_motori.py quarto
+
+I primi due contemporaneamente:
+python3 ~/hamda_quattro_motori.py insieme
+
+Il terzo e il quarto contemporaneamente:
+python3 ~/hamda_quattro_motori.py coppia2
+
+Tutti e quattro contemporaneamente, prova confermata al banco:
+python3 ~/hamda_quattro_motori.py tutti
+
+Ogni prova imposta un impulso di 0,25 secondi, poi le uscite spente.
+Osserva che si fermino da soli. Dopo la prova scollega il powerbank.
+Se un motore parte prima del comando, continua a vibrare o compare
+un errore, scollega subito il powerbank dei motori.
+
+INTERROMPERE UN COMANDO IN CORSO
+Premi Ctrl + C, non il tasto Command del Mac.
+Il programma tenta di spegnere le uscite quando viene interrotto.
+Il distacco del powerbank e' l'arresto fisico in caso di problemi.
+
+SPEGNERE CORRETTAMENTE IL RASPBERRY
+Prima scollega il powerbank dei motori.
+Nel Terminale del Raspberry esegui:
+sudo systemctl poweroff
+Se richiesta, inserisci la password del Raspberry e premi Invio.
+Aspetta 30 secondi, poi scollega la USB-C POWER IN.
+La spia rossa puo' restare accesa finche' il cavo USB-C e' collegato.
+Togli alimentazione anche prima di estrarre la SD o spostare cavetti.
+
+RIAVVIARE IL RASPBERRY, SE NECESSARIO
+Prima scollega il powerbank dei motori.
+sudo systemctl reboot
+Attendi il ritorno del sistema senza togliere alimentazione durante il riavvio.
+
+VEDERE I COMANDI DISPONIBILI DEL PROGRAMMA
+python3 ~/hamda_quattro_motori.py --help
+
+CONTROLLARE IL BUS I2C
+ls -l /dev/i2c-1
+Deve comparire /dev/i2c-1, con gruppo i2c.
+
+CONTROLLARE I GRUPPI DEL PROPRIO UTENTE
+id -nG
+La G e' maiuscola. Nell'elenco deve esserci i2c.
+
+CONTROLLARE LA VERSIONE DI PYTHON
+python3 --version
+
+COPIA DI RECUPERO DEL PROGRAMMA
+Conservare l'archivio HAMDA_banco_quattro_motori_2026-11-09.zip.
+Contiene programma, installatore, collegamenti e questo promemoria.
+Il programma corrente e' nella cartella personale del Raspberry:
+~/hamda_quattro_motori.py
+L'installazione diretta non ne crea una copia nella cartella bootfs.
+Il precedente hamda_banco.py resta il programma del banco a due motori.
+
+DATA E ORA
+date
+Se la data e' errata, controllarla prima di accedere ai siti HTTPS.
+I comandi con una data fissa vanno aggiornati al giorno e all'ora attuali.
+
+MODIFICARE QUESTO PROMEMORIA
+Sul Mac apri COMANDI_HAMDA.txt con TextEdit.
+Aggiungi le tue note e salva con Command + S.
+I comandi del foglio si eseguono nel Terminale del Raspberry.
+
+NOTE PERSONALI
