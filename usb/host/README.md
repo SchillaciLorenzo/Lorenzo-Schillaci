@@ -24,8 +24,8 @@ blu su S4 sono stati ripristinati; B2/B3/B4 non sono stati provati singolarmente
 
 Su **A** sono riferiti funzionamento dei quattro in gruppo e spegnimento
 autonomo. Nella successiva prova combinata l'utente ha riferito vibrazione di
-**tutti e otto**, ma la conferma esplicita dello spegnimento combinato è ancora
-attesa. Non sono stati incollati nuovi log ACK di queste prove. Le prove
+**tutti e otto e arresto autonomo prima di spegnere le batterie**.
+Non sono stati incollati nuovi log ACK di queste prove. Le prove
 individuali A e B2/B3/B4 restano da eseguire.
 
 Il primo tentativo dell'helper combinato è stato annullato prima di aprire
@@ -85,8 +85,8 @@ secondo invio o su qualunque ACK avvia lo STOP best effort di entrambe.
 Questa modalità del **client completo** è verificata soltanto con seriali
 finte. La vibrazione degli otto riferita sul banco ha usato un helper inline
 separato e non dimostra il collaudo di questo entrypoint. L'osservazione non
-misura sincronismo, indipendenza individuale o durata; lo spegnimento del
-gruppo combinato attende ancora conferma.
+misura sincronismo, indipendenza individuale o durata; l'arresto autonomo
+del gruppo combinato è confermato come osservazione dell'utente.
 
 ## Identità e protocollo
 

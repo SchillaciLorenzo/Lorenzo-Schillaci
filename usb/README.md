@@ -3,8 +3,8 @@
 Il codice corrente è in [firmware](firmware/README.md) e
 [host](host/README.md). Lo [stato del 20 novembre](../docs/STATO_2026-11-20.md)
 distingue prove fisiche, comandi confermati e verifiche ancora da eseguire.
-Le prove hardware sono riprese: è stata riferita la vibrazione degli otto motori.
-La conferma esplicita dello spegnimento combinato è ancora attesa.
+La prima prova combinata è riferita riuscita: tutti e otto i motori hanno
+vibrato e si sono fermati da soli, prima dello spegnimento delle batterie.
 
 ## File del banco
 

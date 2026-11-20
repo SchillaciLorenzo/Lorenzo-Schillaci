@@ -23,9 +23,9 @@ verificato soltanto offline.
   su S3 e blu su S4 ripristinati. B2/B3/B4 non sono stati provati singolarmente.
 - Su A: gruppo dei quattro e spegnimento autonomo riferiti riusciti. Nessun
   nuovo log ACK incollato per questa prova; nessuna prova individuale A.
-- Nella prova combinata tramite helper, l'utente riferisce che vibrano tutti
-  e otto. **La conferma dello spegnimento combinato è ancora attesa.** Nessun
-  nuovo log ACK, sincronismo o durata fisica misurati vengono dedotti.
+- Nella prova combinata tramite helper, l'utente riferisce che **tutti e otto
+  hanno vibrato e si sono fermati da soli prima di spegnere le batterie**.
+  Nessun nuovo log ACK, sincronismo o durata fisica misurati vengono dedotti.
 - La misura USB-only V/G dei driver di A non è stata eseguita. Le misure
   elettriche di B non vengono attribuite ad A.
 

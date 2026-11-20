@@ -8,9 +8,9 @@ banco a due moduli. Il progetto HAMDA completo comprende sviluppi ulteriori.
 **Stato al 20 novembre 2026:** nuovo firmware scritto e identificato su A e B.
 Su B sono riferite prove fisiche riuscite del primo motore e dei quattro in
 gruppo. Su A sono riferiti funzionamento dei quattro e spegnimento autonomo.
-Nella successiva prova combinata l'utente ha confermato che **vibrano tutti e
-otto**; lo spegnimento del gruppo combinato attende ancora una conferma
-esplicita. Le prove hardware sono riprese. I dettagli sono in
+Nella successiva prova combinata l'utente ha confermato che **tutti e otto
+vibrano e si fermano da soli prima di spegnere le batterie**. Il primo test
+di gruppo A+B è riuscito. I dettagli sono in
 [Stato del banco](docs/STATO_2026-11-20.md).
 
 Il [resoconto delle verifiche offline](docs/VERIFICA_2026-11-20.md) registra
@@ -124,7 +124,7 @@ Nel venv nuovo sostituisci l'interprete del Pi con `.venv-host/bin/python`.
 | Identità e STOP A | Stessa sintassi con `--unit A off`. | Confermati sul banco. |
 | Motore A separato | Stessa sintassi con `--unit A primo --ms 250`. | Prova individuale non eseguita. |
 | Quattro motori A | Stessa sintassi con `--unit A tutti --ms 250`. | Gruppo e spegnimento autonomo riferiti riusciti. |
-| Otto motori richiesti | Stessa sintassi con `--unit entrambe tutti --ms 250`. | Vibrazione di tutti e otto riferita tramite helper; conferma dello spegnimento combinato ancora attesa. |
+| Otto motori richiesti | Stessa sintassi con `--unit entrambe tutti --ms 250`. | Vibrazione degli otto e arresto autonomo riferiti riusciti tramite helper. |
 
 Per le nuove prove di gruppo non sono stati incollati ulteriori log ACK.
 L'osservazione degli otto non dimostra sincronismo temporale o indipendenza
